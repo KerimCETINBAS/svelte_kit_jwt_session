@@ -1,0 +1,54 @@
+{
+	"name": "svelte-kit-jwt-session",
+	"version": "0.0.1",
+	"contributors": [
+		{
+			"name": "Kerim Cetinbas",
+			"url": "https://github.com/kerimCetinbas",
+			"email": "a.kerim.cetinbas@yandex.com"
+		},
+		{
+			"name": "Ibrahim Sugun",
+			"url": "https://github.com/ibrahimsugun",
+			"email": "ibrahimsugun@gmail.com"
+		}
+	],
+	"keywords": [
+		"session",
+		"svelte",
+		"sveltekit",
+		"sveltejs",
+		"jwt",
+		"jsonwebtoken",
+		"sveltekit-session",
+		"sveltekit-jwt-session"
+	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/astralyazilim/svelte_kit_jwt_session"
+	},
+	"description": "Svelte-kit jwt session hook",
+	"scripts": {
+		"dev": "vite dev",
+		"build": "svelte-kit sync && svelte-package",
+		"prepublishOnly": "echo 'Did you mean to publish `./package/`, instead of `./`?' && exit 1",
+		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
+	},
+	"devDependencies": {
+		"@sveltejs/adapter-auto": "next",
+		"@sveltejs/kit": "next",
+		"@sveltejs/package": "^1.0.0-next.6",
+		"@types/jsonwebtoken": "^8.5.9",
+		"svelte": "^3.44.0",
+		"svelte-check": "^2.7.1",
+		"svelte-preprocess": "^4.10.6",
+		"tslib": "^2.3.1",
+		"typescript": "^4.7.4",
+		"vite": "^3.1.0"
+	},
+	"peerDependencies": {
+		"jsonwebtoken": "^8.5.1"
+	},
+	"type": "module"
+}
