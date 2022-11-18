@@ -1,38 +1,125 @@
-# create-svelte
+# sveltekit jwt session
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte).
+## installation
 
-## Creating a project
+```shell
+  // npm
+  npm install svelte-kit-jwt-session
 
-If you're seeing this, you've probably already done this step. Congrats!
+  // yarn
+  yarn add svelte-kit-jwt-session
+  
+  // pnpm 
+  pnpm add svelte-kit-jwt-session
 
-```bash
-# create a new project in the current directory
-npm create svelte@latest
-
-# create a new project in my-app
-npm create svelte@latest my-app
 ```
 
-## Developing
+## Usage
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+hooks.server/index.ts|js
 
-```bash
-npm run dev
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+```ts
+import { handleSession, type Payloads } from "svelte-kit-jwt-session";
+
+const session = handleSession({
+    access: {
+        cookieName: "allins_session",
+        cookieOptions: {
+            path: "/",
+            maxAge: 60
+        },
+        secret: "secretKeyThatIsNotOnGithub"
+    },
+    refresh: {
+        cookieName: "allins_session_reserved",
+        cookieOptions: {
+            path: "/",
+            maxAge: 60 * 60 * 24 * 7
+        },
+        secret: 'ssssssh!'
+    }
+})
+
+export const handle: Handle = session
+
+// if you want to use handle hook use sequence helper method
+// export const handle = sequence(anotherHook, session)
 ```
 
-## Building
 
-To create a production version of your app:
+and app.d.ts 
+```ts
+declare namespace App {
+	interface Locals {
+		session: import("svelte-kit-jwt-session").LocalType;
+	}
+	// interface PageData {}
+	// interface Error {}
+	// interface Platform {}
+}
 
-```bash
-npm run build
+```
+## Login
+
+routes/login/+page.server.ts or whatever you want
+```ts
+import { type Action, type Actions, redirect } from "@sveltejs/kit"
+import { login  }from "svelte-kit-jwt-session";
+
+const loginAction: Action = (event) => {
+   // do your logic ...
+
+   /**
+    * @param { import("svelte-kit-jwt-session").Payloads }  payloads 
+    */
+   login({ accessPayload: { sub: "j@doe" , role: "admin"}, refreshPayload: { sub: "j@doe"}})
+
+   throw redirect(302, "/")
+}
+
+export const actions: {
+    login: loginAction
+}
+
 ```
 
-You can preview the production build with `npm run preview`.
+## Access session
 
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
++layout.server.ts
+```ts
+ import type { ServerLoad } from "@sveltejs/kit";
+  export const load: ServerLoad = ({locals}) => {
+
+    // session accessible on locals.session
+
+    return {
+        session: locals.session
+    }
+  }
+```
+
+## Reauth
+if you want to renew your access token automatically upon expiration
+```ts
+
+const session = handleSession({
+    access: {...},
+    refresh: {...},
+    /**
+     * @param {JWTPayload | string} refreshToken
+     * @return { import("svelte-kit-jwt-session").Payloads }
+     */
+    reauth: (refreshTokenPayload) => {
+        // do your logic here
+        
+        
+        return {
+            accessPayload: refreshTokenPayload,
+            refreshPayload: refreshTokenPayload
+        }
+    }
+})
+
+
+```
